@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Копилка 400к</title>
+<meta name="theme-color" content="#0F7B5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Копилка">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="top-row">
+      <div>
+        <div class="eyebrow">Подушка безопасности</div>
+        <h1>Копилка <span id="goal-short">400к</span></h1>
+      </div>
+      <span class="level" id="level">Уровень 1 · Старт</span>
+    </div>
+    <div class="big"><span id="total">0</span> <small>из <span id="goalv">400 000</span> ₽</small></div>
+    <div class="track" role="progressbar" aria-label="Прогресс к цели" aria-valuemin="0" aria-valuemax="100" id="bar"><i id="barfill"></i></div>
+    <div class="ticks" aria-hidden="true"><span>¼</span><span>½</span><span>¾</span><span>цель</span></div>
+  </header>
+
+  <div class="banner" id="banner" hidden></div>
+
+  <main>
+    <!-- Главная -->
+    <section id="view-home" class="view">
+      <div class="stats">
+        <div class="stat"><span class="eyebrow">В корзинах</span><b id="s-placed">0 ₽</b></div>
+        <div class="stat"><span class="eyebrow">Свободные</span><b id="s-free">0 ₽</b></div>
+        <div class="stat"><span class="eyebrow">Набежало сейчас</span><b id="s-accr">0 ₽</b></div>
+        <div class="stat"><span class="eyebrow">Заработано</span><b id="s-earned">0 ₽</b></div>
+      </div>
+      <div class="quick">
+        <button type="button" class="primary" data-action="deposit">+ Пополнить</button>
+        <button type="button" data-action="bucket">+ Корзина</button>
+      </div>
+
+      <div class="block" id="attn-block" hidden>
+        <div class="block-head"><h2>Пора действовать</h2><span class="muted" id="attn-count"></span></div>
+        <div class="cards" id="attn"></div>
+      </div>
+
+      <div class="block">
+        <div class="block-head"><h2>Квесты месяца</h2><span class="muted" id="streak"></span></div>
+        <ul class="quests" id="quests"></ul>
+      </div>
+
+      <div class="block">
+        <div class="block-head"><h2>Корзины</h2><span class="muted" id="buckets-count"></span></div>
+        <div class="cards" id="buckets"></div>
+        <p class="empty" id="buckets-empty" hidden>Корзин пока нет. Открой счёт или вклад и нажми «+ Корзина», или выбери предложение на вкладке «Ставки».</p>
+      </div>
+
+      <div class="block">
+        <div class="block-head"><h2>Достижения</h2></div>
+        <div class="badges" id="badges"></div>
+      </div>
+    </section>
+
+    <!-- Ставки -->
+    <section id="view-offers" class="view" hidden>
+      <div class="block">
+        <div class="block-head"><h2>Охота за ставками</h2><button type="button" data-action="offer">+ Предложение</button></div>
+        <div class="cards" id="offers"></div>
+        <p class="empty" id="offers-empty" hidden>Предложений нет. Добавь акцию, которую увидел в банке.</p>
+      </div>
+      <div class="block">
+        <h2>Правила игры</h2>
+        <ul class="rules">
+          <li><b>Приветственная ставка живёт 2 месяца.</b> Ставь напоминание и переноси, когда она падает до 6–7%.</li>
+          <li><b>Не больше лимита.</b> Сумма сверх лимита акции получает базовую ставку.</li>
+          <li><b>До 1,4 млн в одном банке</b> застраховано АСВ. Инвесткопилка и фонды — нет.</li>
+          <li><b>Налог.</b> Проценты не облагаются до 1 млн × максимальная ключевая за год (за 2026 ≈ 160 000 ₽).</li>
+          <li><b>Главное — пополнения.</b> Ставки дают тысячи, 400к собираются взносами.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- История -->
+    <section id="view-history" class="view" hidden>
+      <div class="block">
+        <div class="block-head"><h2>Пополнения</h2><button type="button" data-action="deposit">+ Пополнить</button></div>
+        <div class="rows" id="deposits"></div>
+        <p class="empty" id="deposits-empty" hidden>Пополнений пока нет.</p>
+      </div>
+      <div class="block">
+        <div class="block-head"><h2>Закрытые корзины</h2></div>
+        <div class="rows" id="closed"></div>
+        <p class="empty" id="closed-empty" hidden>Закрытых корзин пока нет.</p>
+      </div>
+    </section>
+
+    <!-- Ещё -->
+    <section id="view-more" class="view" hidden>
+      <div class="block">
+        <h2>Цель</h2>
+        <form class="inline" id="goal-form">
+          <label for="goal-input">Сколько хочу накопить, ₽<input id="goal-input" type="number" inputmode="numeric" min="1000" step="1000"></label>
+          <button type="submit" class="primary">Сохранить</button>
+        </form>
+      </div>
+      <div class="block">
+        <h2>Аккаунт и данные</h2>
+        <p class="muted" id="account-line"></p>
+        <div class="quick">
+          <button type="button" id="btn-export">Скачать бэкап (JSON)</button>
+          <label class="btn" for="import-file">Загрузить бэкап<input type="file" id="import-file" accept="application/json,.json" hidden></label>
+          <button type="button" id="btn-signout" hidden>Выйти</button>
+        </div>
+        <p class="hint">Бэкап — файл со всеми корзинами, пополнениями и ставками. Загрузка бэкапа добавляет записи к текущим.</p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="Разделы">
+    <a href="#home" data-tab="home">Главная</a>
+    <a href="#offers" data-tab="offers">Ставки</a>
+    <a href="#history" data-tab="history">История</a>
+    <a href="#more" data-tab="more">Ещё</a>
+  </nav>
+</div>
+
+<!-- Экран входа -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-card">
+    <h1>Копилка 400к</h1>
+    <p class="muted">Войди через свой Google-аккаунт: данные синхронизируются между телефоном и компьютером.</p>
+    <button type="button" class="primary" id="btn-signin">Войти через Google</button>
+    <p class="hint" id="gate-msg"></p>
+  </div>
+</div>
+
+<!-- Шторка с формами -->
+<dialog id="sheet">
+  <form method="dialog" id="sheet-form" novalidate>
+    <h2 id="sheet-title"></h2>
+    <div class="fields" id="sheet-fields"></div>
+    <div class="sheet-actions">
+      <button type="submit" class="primary" id="sheet-ok">Сохранить</button>
+      <button type="button" id="sheet-cancel">Отмена</button>
+      <button type="button" class="danger" id="sheet-delete" hidden>Удалить</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" hidden role="status"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
