@@ -423,7 +423,7 @@ $("btn-signout").addEventListener("click", async () => { await store.signOut(); 
 // ---------- Старт ----------
 route();
 render();
-store = firebaseConfig && firebaseConfig.apiKey ? new FirebaseStore(firebaseConfig) : new LocalStore();
+store = firebaseConfig && firebaseConfig.apiKey && !new URLSearchParams(location.search).has("local") ? new FirebaseStore(firebaseConfig) : new LocalStore();
 let seededCheck = false;
 store.start(async (state) => {
   S = state; render();

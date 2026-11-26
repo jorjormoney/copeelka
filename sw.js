@@ -1,6 +1,6 @@
 // Офлайн-оболочка: кэшируем файлы приложения, данные синхронизирует Firebase.
-const CACHE = "copeelka-v3";
-const SHELL = ["./", "index.html", "style.css", "app.js", "store.js", "firebase-config.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
+const CACHE = "copeelka-v5";
+const SHELL = ["./", "index.html", "style.css", "app.js", "store.js", "firebase-config.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", (e) => {
