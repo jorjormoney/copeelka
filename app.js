@@ -27,7 +27,7 @@ function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = fals
 
 // ---------- Стартовые предложения (проверено 26.11.2026) ----------
 const SEED_OFFERS = [
-  { bank: "ВТБ", product: "Накопительный счёт, акция для новичков", rate: 20, months: 2, rateAfter: 6, limitMax: 50000, limit: "до 50 000 ₽", term: "2 месяца", conditions: "Только для новых клиентов продукта. Проверь, считается ли зарплатный клиент новичком. Потом около 6%.", checked: "приложение ВТБ, 26.11.2026" },
+  { bank: "ВТБ", product: "Накопительный счёт, акция для новичков", rate: 20, months: 2, rateAfter: 6, limitMax: 50000, limit: "до 50 000 ₽", term: "2 месяца", conditions: "Только для новых клиентов продукта: проверь в приложении, подходишь ли. Потом около 6%.", checked: "приложение ВТБ, 26.11.2026" },
   { bank: "Альфа-Банк", product: "Апельсиновая карта, процент на остаток", rate: 17, limitMax: 25000, limit: "на сумму 10 000–25 000 ₽", term: "пока действует тариф", conditions: "Держи на карте около 25 000 ₽: на остальное 17% не начисляют.", checked: "приложение Альфы, 26.11.2026" },
   { bank: "Альфа-Банк", product: "Альфа-Счёт", rate: 15, until: "2027-01-31", rateAfter: 7, limit: "без жёсткого лимита", term: "до 31.01.2027", conditions: "Процент на минимальный остаток. Повышенная ставка при покупках по картам Альфы, без покупок около 7%.", checked: "vbr.ru, 23.11.2026" },
   { bank: "ВТБ", product: "ВТБ-Счёт (накопительный)", rate: 14.7, months: 2, rateAfter: 6, limitMax: 1000000, limit: "до 1 000 000 ₽", term: "первые 2 месяца", conditions: "Приветственная ставка, потом около 6%.", checked: "vbr.ru, 30.10.2026" },
@@ -82,7 +82,7 @@ function gcalLink(b) {
   const f = (x) => ymd(x).replaceAll("-", "");
   const p = new URLSearchParams({
     action: "TEMPLATE",
-    text: "Копилка: перенести деньги из «" + (b.bank || "") + "»",
+    text: "copeelka: перенести деньги из «" + (b.bank || "") + "»",
     dates: f(d) + "/" + f(new Date(d.getTime() + DAY)),
     details: "Повышенная ставка " + b.rate + "% по «" + (b.product || b.bank) + "» заканчивается " + ruDate(b.until) + ". Сумма " + rub(b.amount) + ".",
   });
@@ -97,7 +97,7 @@ function icsFile(b) {
     "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//kopilka//RU", "BEGIN:VEVENT",
     "UID:" + uid, "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
     "DTSTART;VALUE=DATE:" + f(d), "DTEND;VALUE=DATE:" + f(new Date(d.getTime() + DAY)),
-    "SUMMARY:" + esc("Копилка: перенести деньги из «" + (b.bank || "") + "»"),
+    "SUMMARY:" + esc("copeelka: перенести деньги из «" + (b.bank || "") + "»"),
     "DESCRIPTION:" + esc("Ставка " + b.rate + "% заканчивается " + ruDate(b.until) + ". Сумма " + rub(b.amount) + "."),
     "BEGIN:VALARM", "TRIGGER:PT10H", "ACTION:DISPLAY", "DESCRIPTION:" + esc("Пора переносить деньги"), "END:VALARM",
     "END:VEVENT", "END:VCALENDAR",
@@ -252,6 +252,24 @@ function offerForm(o) {
   });
 }
 
+function goalForm(first) {
+  openSheet({
+    title: first ? "Добро пожаловать в copeelka!" : "Цель",
+    submit: first ? "Поехали" : "Сохранить",
+    fields: [
+      first ? { type: "note", text: "Поставь цель: на что копишь и сколько нужно. Прогресс, уровни и достижения будут считаться от неё. Поменять можно потом во вкладке «Ещё»." } : null,
+      { id: "goalName", label: "На что коплю", value: S.meta.goalName || "", placeholder: "Подушка безопасности" },
+      { id: "goal", label: "Сколько нужно, ₽", type: "number", inputmode: "numeric", min: 1000, step: "1000", value: S.meta.goal || "", placeholder: "400000" },
+    ].filter(Boolean),
+    onSubmit: async () => {
+      const goal = num("goal");
+      if (!(goal > 0)) { toast("Впиши сумму цели"); return false; }
+      await store.setMeta({ goal, goalName: val("goalName") || "Моя цель" });
+      if (first) toast("Цель поставлена. Начни с «+ Пополнить»");
+    },
+  });
+}
+
 // ---------- Отрисовка ----------
 function bucketCard(b) {
   const s = stateOf(b), proj = projected(b);
@@ -281,7 +299,7 @@ function render() {
   const D = derive(S);
   $("total").textContent = Math.round(D.total).toLocaleString("ru-RU");
   $("goalv").textContent = Math.round(D.goal).toLocaleString("ru-RU");
-  $("goal-short").textContent = D.goal % 1000 === 0 ? D.goal / 1000 + "к" : rub(D.goal);
+  $("goal-name").textContent = S.meta.goalName || "Моя цель";
   const pct = Math.max(0, Math.min(100, D.total / D.goal * 100));
   $("barfill").style.width = pct.toFixed(1) + "%";
   $("bar").setAttribute("aria-valuenow", pct.toFixed(0));
@@ -358,6 +376,7 @@ function render() {
   $("closed").hidden = !closed.length;
 
   if (document.activeElement !== $("goal-input")) $("goal-input").value = D.goal;
+  if (document.activeElement !== $("goal-name-input")) $("goal-name-input").value = S.meta.goalName || "";
 }
 
 // ---------- Вкладки ----------
@@ -378,7 +397,7 @@ $("goal-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const g = Number($("goal-input").value);
   if (!(g > 0)) return toast("Впиши цель");
-  await store.setMeta({ goal: g }); toast("Цель сохранена");
+  await store.setMeta({ goal: g, goalName: $("goal-name-input").value.trim() }); toast("Цель сохранена");
 });
 $("btn-export").addEventListener("click", () => {
   const data = { app: "kopilka", version: 1, exportedAt: new Date().toISOString(), ...S };
@@ -412,8 +431,9 @@ store.start(async (state) => {
     seededCheck = true;
     if (!S.meta.seeded) {
       if (!S.offers.length) await store.addMany("offers", SEED_OFFERS);
-      await store.setMeta({ seeded: true, goal: S.meta.goal || 400000 });
+      await store.setMeta({ seeded: true });
     }
+    if (!S.meta.goal) goalForm(true);
   }
 }, (auth) => {
   $("gate").hidden = auth.signedIn;

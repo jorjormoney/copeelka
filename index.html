@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Копилка 400к</title>
+<title>copeelka</title>
 <meta name="theme-color" content="#0F7B5C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Копилка">
+<meta name="apple-mobile-web-app-title" content="copeelka">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <div class="app">
   <header class="top">
     <div class="top-row">
       <div>
-        <div class="eyebrow">Подушка безопасности</div>
-        <h1>Копилка <span id="goal-short">400к</span></h1>
+        <div class="eyebrow" id="goal-name">Моя цель</div>
+        <h1 class="brand" aria-label="copeelka"><span class="brand-co">co</span><svg class="brand-tail" viewBox="-3 -14 35 24" aria-hidden="true"><path d="M0,5 C9,5 19,4 19,-4 C19,-11 10,-11 10,-4 C10,4 21,7 29,1"/></svg><span class="brand-pe">peelka</span></h1>
       </div>
       <span class="level" id="level">Уровень 1 · Старт</span>
     </div>
@@ -82,7 +82,7 @@
           <li><b>Не больше лимита.</b> Сумма сверх лимита акции получает базовую ставку.</li>
           <li><b>До 1,4 млн в одном банке</b> застраховано АСВ. Инвесткопилка и фонды — нет.</li>
           <li><b>Налог.</b> Проценты не облагаются до 1 млн × максимальная ключевая за год (за 2026 ≈ 160 000 ₽).</li>
-          <li><b>Главное — пополнения.</b> Ставки дают тысячи, 400к собираются взносами.</li>
+          <li><b>Главное — пополнения.</b> Ставки дают тысячи, а цель собирается взносами.</li>
         </ul>
       </div>
     </section>
@@ -106,6 +106,7 @@
       <div class="block">
         <h2>Цель</h2>
         <form class="inline" id="goal-form">
+          <label for="goal-name-input">На что коплю<input id="goal-name-input" maxlength="60" placeholder="Подушка безопасности"></label>
           <label for="goal-input">Сколько хочу накопить, ₽<input id="goal-input" type="number" inputmode="numeric" min="1000" step="1000"></label>
           <button type="submit" class="primary">Сохранить</button>
         </form>
@@ -134,8 +135,8 @@
 <!-- Экран входа -->
 <div class="gate" id="gate" hidden>
   <div class="gate-card">
-    <h1>Копилка 400к</h1>
-    <p class="muted">Войди через свой Google-аккаунт: данные синхронизируются между телефоном и компьютером.</p>
+    <h1 class="brand" aria-label="copeelka"><span class="brand-co">co</span><svg class="brand-tail" viewBox="-3 -14 35 24" aria-hidden="true"><path d="M0,5 C9,5 19,4 19,-4 C19,-11 10,-11 10,-4 C10,4 21,7 29,1"/></svg><span class="brand-pe">peelka</span></h1>
+    <p class="muted">Копилка-игра: раскладывай деньги по выгодным ставкам и собирай свою цель. Войди через Google — данные синхронизируются между телефоном и компьютером.</p>
     <button type="button" class="primary" id="btn-signin">Войти через Google</button>
     <p class="hint" id="gate-msg"></p>
   </div>
@@ -157,6 +158,6 @@
 <div class="toast" id="toast" hidden role="status"></div>
 <canvas id="fx" aria-hidden="true"></canvas>
 
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=3"></script>
 </body>
 </html>
